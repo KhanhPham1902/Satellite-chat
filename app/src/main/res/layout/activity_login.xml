@@ -1,62 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/layoutLogin"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LoginActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/bar_layout"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
+        android:layout_height="200dp"
+        android:background="@drawable/header_blue"
+        android:gravity="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        android:layout_below="@+id/toolbar"
-        android:padding="16dp"
-        android:layout_height="wrap_content">
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:background="#FEFEFE">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Đăng nhập"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
-
+            android:textSize="22sp"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold" />
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/email"
-            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:hint="Tên tài khoản"/>
-        <EditText
+            android:hint="Tên tài khoản"
+            android:padding="10dp"
+            android:background="@drawable/custom_edittext"/>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/passWord"
-            android:inputType="textPassword"
-            android:layout_marginTop="10dp"
-            android:hint="Mật khẩu"/>
+            android:orientation="horizontal"
+            android:background="@drawable/custom_edittext"
+            android:layout_marginTop="10dp">
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="6"
+                android:hint="Mật khẩu"
+                android:background="@drawable/custom_edt"
+                android:inputType="textPassword"
+                android:padding="10dp"/>
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/imgHidePass"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/visibility_off"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
 
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Đăng nhập"
             android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:layout_marginTop="15dp"
-            android:textColor="#fff" />
+            android:backgroundTint="@color/light_blue"
+            android:text="Đăng nhập"
+            android:textColor="#fff"
+            android:textSize="17sp"/>
+
         <TextView
+            android:id="@+id/forgot_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="Quên mật khẩu?"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="end"
-            android:textStyle="bold"
-            android:id="@+id/forgot_password"
-            android:textColor="@color/colorPrimaryDark"
-            />
+            android:textColor="@color/light_blue"
+            android:textStyle="bold" />
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

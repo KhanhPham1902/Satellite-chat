@@ -51,7 +51,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MessageActivity" />
-        <service android:name=".NotificationService" />
+        <service android:name=".NotificationService"
+            android:foregroundServiceType="dataSync"/>
 
     </application>
 

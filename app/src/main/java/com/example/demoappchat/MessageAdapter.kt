@@ -79,7 +79,5 @@ class MessageAdapter(
         messages = newMessages
         notifyDataSetChanged()
         recyclerView.smoothScrollToPosition(messages.size - 1)
-
     }
-
 }

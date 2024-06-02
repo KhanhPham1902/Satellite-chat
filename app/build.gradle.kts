@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.example.demoappchat"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation ("com.google.gms:google-services:4.3.13") // Sử dụng service cua google
+    implementation ("com.google.gms:google-services:4.3.13")
 
 
     implementation ("androidx.appcompat:appcompat:1.2.0")
@@ -57,6 +57,10 @@ dependencies {
     implementation ("com.mesibo.api:webrtc:1.0.5")
 
     implementation ("io.socket:socket.io-client:2.1.0")
+
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

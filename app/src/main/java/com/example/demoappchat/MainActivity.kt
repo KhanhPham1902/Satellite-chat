@@ -5,13 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import de.hdodenhof.circleimageview.CircleImageView
@@ -22,9 +23,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
     private lateinit var userName: TextView
-    private val sharedPrefFile = "com.example.demoappchat.sharedprefs"
-//    hoang comit
-    //khanh kcommit
+    private val sharedPrefInfo = "LOGIN_INFO"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -55,12 +55,16 @@ class MainActivity : AppCompatActivity() {
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
             tab.text = viewPagerAdapter.getPageTitle(position)
         }.attach()
+
+        // Kich hoat dich vu thong bao
         startNotificationService()
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.logout -> {
@@ -71,15 +75,17 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     private fun startNotificationService() {
         val serviceIntent = Intent(this, NotificationService::class.java)
         startService(serviceIntent)
-        val webSocketManager = WebSocketManager()
+        val webSocketManager = WebSocketManager(this)
         webSocketManager.connectToWebSocket()
     }
+
     private fun logout() {
         // Xoá SharedPreferences
-        val sharedPreferences: SharedPreferences = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()

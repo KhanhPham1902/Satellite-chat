@@ -4,24 +4,25 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.OnTouchListener
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.demoappchat.databinding.ActivityMessageBinding
-import com.google.gson.Gson
+import okhttp3.ResponseBody
+import org.json.JSONArray
+import org.json.JSONException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.util.*
-import com.google.gson.JsonElement
-import okhttp3.ResponseBody
-import org.json.JSONArray
-import org.json.JSONException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Date
+import java.util.Locale
 
 class MessageActivity : AppCompatActivity() {
 
@@ -31,6 +32,7 @@ class MessageActivity : AppCompatActivity() {
     private var originalMessages: List<Message> = emptyList() // Danh sách tin nhắn gốc
     private lateinit var username : String
     private lateinit var password : String
+    private val sharedPrefInfo = "LOGIN_INFO"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +48,12 @@ class MessageActivity : AppCompatActivity() {
         readMessages() // Gọi hàm readMessages sau khi messageAdapter đã được khởi tạo
         initUIEventHandlers()
         displayDataFromIntent()
+
+        // An ban phim ao khi nhan vi tri bat ki tren man hinh
+        binding.recyclerView.setOnTouchListener(OnTouchListener { v: View?, event: MotionEvent? ->
+            hideKeyboard()
+            false
+        })
     }
 
     private fun initRetrofit() {
@@ -69,8 +77,6 @@ class MessageActivity : AppCompatActivity() {
                 val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(binding.textSend.windowToken, 0)
             }
-
-
         }
     }
 
@@ -102,9 +108,9 @@ class MessageActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // Truy cập SharedPreferences
-        val sharedPreferences = getSharedPreferences("login_info", Context.MODE_PRIVATE)
-        username = sharedPreferences.getString("username", "").toString()
-        password = sharedPreferences.getString("password", "").toString()
+        val sharedPreferences = getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
+        username = sharedPreferences.getString("USERNAME", "").toString()
+        password = sharedPreferences.getString("PASSWORD", "").toString()
     }
 
     private fun readMessages() {
@@ -127,7 +133,6 @@ class MessageActivity : AppCompatActivity() {
                             val deviceName = intent.getStringExtra("devicename") ?: "000000000"
                             val messages = parseJsonToMessages(jsonString).filter { it.device == deviceName }
                             messageAdapter.updateMessages(messages)
-
 
                             Log.d("TAG", "Đọc tin nhắn thành công")
                         } catch (e: JSONException) {
@@ -174,5 +179,11 @@ class MessageActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    //An ban phim ao
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)
     }
 }

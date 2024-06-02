@@ -14,6 +14,7 @@ class ProfileFragment : Fragment() {
     private lateinit var root : View
     private lateinit var username : String
     private lateinit var password : String
+    private val sharedPrefInfo = "LOGIN_INFO"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,11 +31,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initViews() {
-        val sharedPreferences = requireContext().getSharedPreferences("login_info", Context.MODE_PRIVATE)
-        username = sharedPreferences.getString("username", "").toString()
-        password = sharedPreferences.getString("password", "").toString()
-        var UsernamePf = root.findViewById<TextView>(R.id.userNamePf)
-        UsernamePf.text = username
+        val sharedPreferences = requireContext().getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
+        username = sharedPreferences.getString("USERNAME", "").toString()
+        password = sharedPreferences.getString("PASSWORD", "").toString()
+        val usernamePf = root.findViewById<TextView>(R.id.userNamePf)
+        usernamePf.text = username
     }
 
 }

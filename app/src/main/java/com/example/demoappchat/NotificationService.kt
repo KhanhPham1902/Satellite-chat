@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -18,57 +19,46 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates
 
 class NotificationService : Service() {
 
     private val CHANNEL_ID = "ForegroundServiceChannel"
     private val NOTIFICATION_ID = 123
+    private lateinit var sharedPreferences: SharedPreferences
+    private var userID: Int = 5
     private lateinit var mSocket: Socket
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        sharedPreferences = getSharedPreferences("LOGIN_INFO", Context.MODE_PRIVATE)
+        userID = sharedPreferences.getInt("USERID", 5)
+    }
+
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "1 onStartCommand")
 
-        createNotificationChannel()
-
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, notificationIntent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
-        )
-
-
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Foreground Service")
-            .setContentText("Service is running in the background")
-            .setSmallIcon(R.drawable.user)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        startForeground(NOTIFICATION_ID, notification)
-
         // Kết nối đến server và lắng nghe thông điệp
         connectToServerAndListen()
 
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     private fun createNotificationChannel() {
         Log.d(TAG, "2 createNotificationChannel")
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Foreground Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(serviceChannel)
-        }
+        val serviceChannel = NotificationChannel(
+            CHANNEL_ID,
+            "Foreground Service Channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(serviceChannel)
     }
 
     private fun connectToServerAndListen() {
@@ -76,7 +66,7 @@ class NotificationService : Service() {
             val opts = IO.Options().apply {
                 reconnection = true
                 timeout = 3000
-                query = "user_id=5"
+                query = "user_id=$userID"
             }
             mSocket = IO.socket(AppConfig.BASE_URL, opts)
 
@@ -90,12 +80,11 @@ class NotificationService : Service() {
         }
     }
 
-
     private val onNewMessage = Emitter.Listener { args ->
         if (args.isNotEmpty()) {
             val data = args[0] as JSONObject
-            val message = data.getString("content") // Lấy nội dung tin nhắn từ JSONObject
-            val deviceId = data.getString("device_id") // Lấy device_id từ JSONObject
+            val message = data.getString("content")
+            val deviceId = data.getString("device_id")
             showNotification(deviceId, message)
         }
     }
@@ -108,7 +97,7 @@ class NotificationService : Service() {
         }
         val pendingIntent = PendingIntent.getActivity(
             applicationContext, 0, notificationIntent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val notificationBuilder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)

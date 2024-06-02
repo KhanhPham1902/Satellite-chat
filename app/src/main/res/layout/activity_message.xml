@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/messagesactivity"
-    android:background="#C8C8C8"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MessageActivity">
@@ -174,13 +173,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:background="#CEF6FA"
         android:layout_height="match_parent"
+        android:layout_marginHorizontal="5dp"
         android:layout_below="@+id/barLayout"
         android:layout_above="@+id/bottom"/>
 
     <RelativeLayout
-        android:background="#fff"
         android:id="@+id/bottom"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
@@ -211,7 +209,7 @@
             android:layout_toStartOf="@+id/btn_Send"
             android:layout_toEndOf="@+id/btn_send_image"
             android:height="40dp"
-            android:background="@drawable/edittext_background"
+            android:background="@drawable/custom_edittext"
             android:hint="@string/nh_p_tin_nh_n"
             android:maxLines="5"
             android:paddingHorizontal="10dp"

@@ -7,8 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import okhttp3.ResponseBody
 import org.json.JSONArray
 import org.json.JSONException
@@ -20,10 +23,13 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class DevicesFragment : Fragment() {
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var searchView: SearchView
     private lateinit var root : View
     private val messagesByDevice: MutableMap<String, List<Message>> = mutableMapOf()
     private lateinit var username : String
     private lateinit var password : String
+    private val sharedPrefInfo = "LOGIN_INFO"
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,6 +37,29 @@ class DevicesFragment : Fragment() {
         root = inflater.inflate(R.layout.fragment_devices, container, false)
         initViews()
         getListDevice()
+
+        // Load lai du lieu
+        swipeRefreshLayout = root.findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            getListDevice()
+            swipeRefreshLayout.isRefreshing = false
+        }
+
+        // Tim kiem cuoc tro chuyen
+        searchView = root.findViewById(R.id.search_device)
+        searchView.clearFocus()
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    searchDevice(newText)
+                }
+                return true
+            }
+        })
 
         return root
     }
@@ -66,19 +95,23 @@ class DevicesFragment : Fragment() {
                                 updateDeviceList(uniqueDevices.toList())
 
                                 Log.d("TAG", "Lấy danh sách thiết bị thành công")
+                                swipeRefreshLayout.isRefreshing = false
                             } catch (e: JSONException) {
                                 Log.e("TAG", "Lỗi khi phân tích JSON", e)
+                                swipeRefreshLayout.isRefreshing = false
                             }
                         }
                     } else {
                         // Xử lý lỗi khi đọc tin nhắn không thành công
                         Log.d("TAG", "Lấy danh sách thiết bị không thành công")
+                        swipeRefreshLayout.isRefreshing = false
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     // Xử lý lỗi khi gọi API không thành công
                     Log.e("TAG", "Không thể gọi API", t)
+                    swipeRefreshLayout.isRefreshing = false
                 }
             })
     }
@@ -87,18 +120,17 @@ class DevicesFragment : Fragment() {
         // Khởi tạo RecyclerView và các thiết lập khác
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
+
         // Truy cập SharedPreferences
-        val sharedPreferences = requireContext().getSharedPreferences("login_info", Context.MODE_PRIVATE)
-        username = sharedPreferences.getString("username", "").toString()
-        password = sharedPreferences.getString("password", "").toString()
+        val sharedPreferences = requireContext().getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
+        username = sharedPreferences.getString("USERNAME", "").toString()
+        password = sharedPreferences.getString("PASSWORD", "").toString()
     }
 
     private fun updateDeviceList(devices: List<String>) {
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
         val deviceAdapter = DeviceAdapter(devices,messagesByDevice)
         recyclerView.adapter = deviceAdapter
-
-
     }
 
     private fun parseJsonToMessages(jsonString: String): List<Message> {
@@ -109,7 +141,7 @@ class DevicesFragment : Fragment() {
             val id = messageArray.getInt(0)
             val data = messageArray.getString(1)
             val user_id = messageArray.getInt(2)
-            val deviceName = messageArray.getString(3) // Đổi tên biến này thành deviceName
+            val deviceName = messageArray.getString(3)
             val time = messageArray.getString(4)
             val direc = messageArray.getInt(5)
             val state = messageArray.getString(6)
@@ -127,4 +159,19 @@ class DevicesFragment : Fragment() {
         return messages
     }
 
+    // Tim kiem cuoc tro chuyen
+    private fun searchDevice(query: String) {
+        val filteredDevices = messagesByDevice.keys.filter { device ->
+            device.contains(query, ignoreCase = true)
+        }
+
+        if (filteredDevices.isEmpty()) {
+            Toast.makeText(context, "Không tìm thấy thiết bị", Toast.LENGTH_SHORT).show()
+        }
+
+        // Cập nhật danh sách thiết bị trong adapter
+        val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
+        val deviceAdapter = recyclerView.adapter as? DeviceAdapter
+        deviceAdapter?.setFilteredList(filteredDevices)
+    }
 }

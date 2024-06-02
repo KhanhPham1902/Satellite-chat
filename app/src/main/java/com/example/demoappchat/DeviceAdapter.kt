@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class DeviceAdapter(
     var deviceList: List<String>,
-    var messagesByDevice: Map<String, List<Message>> // Thêm biến messagesByDevice
+    var messagesByDevice: Map<String, List<Message>>
 ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
@@ -19,17 +22,25 @@ class DeviceAdapter(
 
     override fun onBindViewHolder(holder: DeviceViewHolder, position: Int) {
         val deviceName = deviceList[position]
-        holder.bind(deviceName)
+        val messages = messagesByDevice[deviceName] ?: emptyList()
+        holder.bind(deviceName, messages)
     }
 
     override fun getItemCount(): Int {
         return deviceList.size
     }
 
+    fun setFilteredList(filteredList: List<String>) {
+        this.deviceList = filteredList
+        notifyDataSetChanged()
+    }
+
     inner class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val deviceNameTextView: TextView = itemView.findViewById(R.id.deviceName)
+        private val txtLastMessage: TextView = itemView.findViewById(R.id.lastMessage)
+        private val txtLastTime: TextView = itemView.findViewById(R.id.txtLastTime)
+        private val txtSentOrReceived: TextView = itemView.findViewById(R.id.txtSentOrReceived)
         init {
-
             // Thêm lắng nghe sự kiện khi itemView được nhấn
             itemView.setOnClickListener {
                 // Lấy vị trí của item được nhấn
@@ -49,10 +60,32 @@ class DeviceAdapter(
             }
         }
 
-        fun bind(deviceName: String) {
+        fun bind(deviceName: String, messages: List<Message>) {
+            // Lay ten thiet bi
             deviceNameTextView.text = deviceName
-            // Bind avatar to ImageView here if you have avatar data
+
+            // Lay tin nhan cuoi cung
+            val lastMessage = messages.lastOrNull()?.data
+            txtLastMessage.text = lastMessage
+
+            // Lay thoi gian nhan/ gui tin nhan cuoi cung
+            val lastTime = messages.lastOrNull()?.time
+            val sdfInput = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+            val timeBefore = sdfInput.parse(lastTime)
+            if(timeBefore != null){
+                val sdfOutput = SimpleDateFormat("HH:mm", Locale.getDefault())
+                sdfOutput.timeZone = TimeZone.getTimeZone("GMT")
+                val timeFormated = sdfOutput.format(timeBefore)
+                txtLastTime.text = timeFormated
+            }
+
+            // Hien thi trang thai tin nhan gui/ nhan
+            val isSent = messages.lastOrNull()?.direc
+            if(isSent==0){
+                txtSentOrReceived.visibility = View.VISIBLE
+            }else{
+                txtSentOrReceived.visibility = View.GONE
+            }
         }
     }
-
 }

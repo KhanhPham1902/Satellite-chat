@@ -1,5 +1,6 @@
 package com.example.demoappchat
 
+import android.content.Context
 import android.util.Log
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -7,16 +8,18 @@ import io.socket.emitter.Emitter
 import org.json.JSONException
 import org.json.JSONObject
 
-class WebSocketManager {
+class WebSocketManager(context: Context){
 
     private var socket: Socket? = null
+    private val sharedPreferences = context.getSharedPreferences("LOGIN_INFO", Context.MODE_PRIVATE)
+    private val userID = sharedPreferences.getInt("USERID", 5)
 
     fun connectToWebSocket() {
         try {
             val opts = IO.Options().apply {
                 reconnection = true
                 timeout = 3000
-                query = "user_id=4"
+                query = "user_id=$userID"
             }
             socket = IO.socket(AppConfig.BASE_URL, opts)
             Log.d("WebSocketManager", "Connecting to WebSocket...")

@@ -26,7 +26,7 @@ class ChatAdapter(private val chatList: List<ChatModel>) :
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val userName: TextView = itemView.findViewById(R.id.userName)
-        private val lastMessage: TextView = itemView.findViewById(R.id.last_mgs)
+        private val lastMessage: TextView = itemView.findViewById(R.id.lastMessage)
 
         fun bind(chat: ChatModel) {
             userName.text = chat.userName

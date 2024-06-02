@@ -1,31 +1,41 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="#F6FCFF"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/swipeRefreshLayout"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="10dp">
 
-    <EditText
-        android:id="@+id/search_device"
-        android:layout_width="334dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
-        android:hint="Tìm kiếm..." />
-
-    <Button
-        android:id="@+id/Add_device"
-        android:layout_width="80dp"
-        android:layout_height="60dp"
-        android:layout_alignParentEnd="true"
-        android:text="+"
-        android:textSize="30sp"></Button>
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginTop="10dp"
-        android:id="@+id/recyclerView"
-        android:background="@color/white"
-        android:layout_below="@+id/Add_device"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_device"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/custom_edittext"
+                android:queryHint="Tìm kiếm ...."
+                android:iconifiedByDefault="false"/>
 
-</RelativeLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:src="@drawable/plus"
+                android:id="@+id/btnAddDevice"/>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="10dp"
+            android:id="@+id/recyclerView"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

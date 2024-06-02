@@ -3,11 +3,16 @@ package com.example.demoappchat
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.AsyncTask
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,10 +27,14 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var forgotPasswordTextView: TextView
-    private val sharedPrefFile = "com.example.demoappchat.sharedprefs"
+    private lateinit var imgHidePass: ImageButton
+    private lateinit var layoutLogin: LinearLayout
+    private val sharedPrefInfo = "LOGIN_INFO"
+    private var count = 0
+
     // Lưu tên người dùng và mật khẩu vào SharedPreferences
     private fun saveCredentials(username: String, password: String) {
-        val sharedPreferences: SharedPreferences = this.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = this.getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putString("USERNAME", username)
         editor.putString("PASSWORD", password)
@@ -34,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
 
     // Kiểm tra và tự động đăng nhập từ SharedPreferences
     private fun autoLogin() {
-        val sharedPreferences: SharedPreferences = this.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = this.getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("USERNAME", "")
         val password = sharedPreferences.getString("PASSWORD", "")
         if (!username.isNullOrEmpty() && !password.isNullOrEmpty()) {
@@ -47,9 +56,11 @@ class LoginActivity : AppCompatActivity() {
         autoLogin()
         // Ánh xạ các view từ layout
         emailEditText = findViewById(R.id.email)
-        passwordEditText = findViewById(R.id.passWord)
+        passwordEditText = findViewById(R.id.password)
         loginButton = findViewById(R.id.btn_login)
         forgotPasswordTextView = findViewById(R.id.forgot_password)
+        imgHidePass = findViewById(R.id.imgHidePass)
+        layoutLogin = findViewById(R.id.layoutLogin)
 
         // Xử lý sự kiện khi nhấn nút Đăng nhập
         loginButton.setOnClickListener {
@@ -61,12 +72,37 @@ class LoginActivity : AppCompatActivity() {
             Log.d("TAG", "onCreate: $email,$password")
         }
 
+
+        // Hien thi/ an mat khau
+        imgHidePass.setOnClickListener(View.OnClickListener { v: View? ->
+            count++
+            val pass: String = passwordEditText.getText().toString()
+            if (count % 2 == 1) { // Hien thi mat khau
+                if (pass.isNotEmpty()) {
+                    passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
+                    imgHidePass.setImageResource(R.drawable.visibility_off)
+                    passwordEditText.setSelection(passwordEditText.text.length) // Dat lai vi tri con tro
+                }
+            } else { // An mat khau
+                if (pass.isNotEmpty()) {
+                    passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                    imgHidePass.setImageResource(R.drawable.visibility)
+                    passwordEditText.setSelection(passwordEditText.text.length) // Dat lai vi tri con tro
+                }
+            }
+        })
+
+        // An ban phim ao khi nhan vi tri bat ki tren man hinh
+        layoutLogin.setOnTouchListener(View.OnTouchListener { v: View?, event: MotionEvent? ->
+            hideKeyboard()
+            false
+        })
+
         // Xử lý sự kiện khi nhấn vào Quên mật khẩu
         forgotPasswordTextView.setOnClickListener {
             // Xử lý logic cho việc quên mật khẩu
         }
     }
-
 
     private fun loginUser(username: String, password: String) {
         // Tạo request body từ thông tin người dùng
@@ -77,14 +113,15 @@ class LoginActivity : AppCompatActivity() {
         call.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
-                    // Lưu thông tin đăng nhập vào SharedPreferences
-                    val sharedPreferences = getSharedPreferences("login_info", Context.MODE_PRIVATE)
+                    val userId = response.body()?.user_id
+                    val sharedPreferences = getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
-                    editor.putString("username", username)
-                    editor.putString("password", password)
+                    if (userId != null) {
+                        editor.putInt("USERID", userId)
+                    }
                     editor.apply()
                     saveCredentials(username,password)
-                    val user_id = response.body()?.user_id
+
                     Toast.makeText(this@LoginActivity, "Xin chào, $username!", Toast.LENGTH_SHORT).show()
 
                     // Chuyển đến màn hình chính
@@ -107,5 +144,9 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-
+    //An ban phim ao
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)
+    }
 }
