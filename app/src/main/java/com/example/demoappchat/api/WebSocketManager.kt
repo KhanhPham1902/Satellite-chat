@@ -1,7 +1,8 @@
-package com.example.demoappchat
+package com.example.demoappchat.api
 
 import android.content.Context
 import android.util.Log
+import com.example.demoappchat.model.AppConfig
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter

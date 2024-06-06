@@ -1,18 +1,23 @@
-package com.example.demoappchat
+package com.example.demoappchat.adapter
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.demoappchat.model.Message
+import com.example.demoappchat.R
+import com.example.demoappchat.activity.MessageActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
 class DeviceAdapter(
     var deviceList: List<String>,
-    var messagesByDevice: Map<String, List<Message>>
+    var messagesByDevice: Map<String, List<Message>>,
+    private val recyclerView: RecyclerView
 ) : RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceViewHolder {
@@ -33,6 +38,7 @@ class DeviceAdapter(
     fun setFilteredList(filteredList: List<String>) {
         this.deviceList = filteredList
         notifyDataSetChanged()
+        recyclerView.scrollToPosition(deviceList.size - 1)
     }
 
     inner class DeviceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,20 +47,14 @@ class DeviceAdapter(
         private val txtLastTime: TextView = itemView.findViewById(R.id.txtLastTime)
         private val txtSentOrReceived: TextView = itemView.findViewById(R.id.txtSentOrReceived)
         init {
-            // Thêm lắng nghe sự kiện khi itemView được nhấn
             itemView.setOnClickListener {
-                // Lấy vị trí của item được nhấn
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    // Lấy tên thiết bị và tin nhắn tương ứng
                     val deviceName = deviceList[position]
                     val deviceMessages = messagesByDevice[deviceName] ?: emptyList()
-
-                    // Tạo Intent để chuyển sang MessageActivity và truyền dữ liệu cần thiết
                     val intent = Intent(itemView.context, MessageActivity::class.java)
                     intent.putExtra("devicename", deviceName)
                     intent.putExtra("deviceMessages", ArrayList(deviceMessages))
-                    // Chuyển sang MessageActivity
                     itemView.context.startActivity(intent)
                 }
             }
@@ -77,6 +77,16 @@ class DeviceAdapter(
                 sdfOutput.timeZone = TimeZone.getTimeZone("GMT")
                 val timeFormated = sdfOutput.format(timeBefore)
                 txtLastTime.text = timeFormated
+            }
+
+            // Lay trang thai da xem
+            val isRead = messages.lastOrNull()?.state
+            if(isRead.equals("read")){
+                txtLastMessage.setTypeface(null, Typeface.BOLD)
+                txtLastTime.setTypeface(null, Typeface.BOLD)
+            }else{
+                txtLastMessage.setTypeface(null, Typeface.NORMAL)
+                txtLastTime.setTypeface(null, Typeface.NORMAL)
             }
 
             // Hien thi trang thai tin nhan gui/ nhan

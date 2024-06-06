@@ -38,11 +38,11 @@
         tools:replace="android:appComponentFactory"
         tools:targetApi="31" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,8 +50,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MessageActivity" />
-        <service android:name=".NotificationService"
+        <activity android:name=".activity.MessageActivity" />
+        <service android:name=".service.NotificationService"
             android:foregroundServiceType="dataSync"/>
 
     </application>

@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.model
 
 import android.os.Parcel
 import android.os.Parcelable

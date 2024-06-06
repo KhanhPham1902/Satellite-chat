@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.activity
 
 import android.content.Context
 import android.os.Bundle
@@ -8,8 +8,16 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.demoappchat.model.Message
+import com.example.demoappchat.model.MessageData
+import com.example.demoappchat.api.MsgApiService
+import com.example.demoappchat.R
+import com.example.demoappchat.adapter.MessagesAdapter
+import com.example.demoappchat.api.RetrofitClient
+import com.example.demoappchat.model.TimeRange
 import com.example.demoappchat.databinding.ActivityMessageBinding
 import okhttp3.ResponseBody
 import org.json.JSONArray
@@ -28,7 +36,7 @@ class MessageActivity : AppCompatActivity() {
 
     private lateinit var apiService: MsgApiService
     private lateinit var binding: ActivityMessageBinding
-    private lateinit var messageAdapter: MessageAdapter // Khai báo Adapter
+    private lateinit var messageAdapter: MessagesAdapter
     private var originalMessages: List<Message> = emptyList() // Danh sách tin nhắn gốc
     private lateinit var username : String
     private lateinit var password : String
@@ -42,10 +50,10 @@ class MessageActivity : AppCompatActivity() {
         initViews()
         initRetrofit() // Gọi hàm để khởi tạo Retrofit
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        messageAdapter = MessageAdapter(originalMessages, binding.recyclerView) // Khởi tạo Adapter
-        binding.recyclerView.adapter = messageAdapter // Gán Adapter vào RecyclerView
+        messageAdapter = MessagesAdapter(originalMessages, binding.recyclerView)
+        binding.recyclerView.adapter = messageAdapter
 
-        readMessages() // Gọi hàm readMessages sau khi messageAdapter đã được khởi tạo
+        readMessages()
         initUIEventHandlers()
         displayDataFromIntent()
 
@@ -99,7 +107,7 @@ class MessageActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                // Xử lý khi gửi tin nhắn không thành công
+                Toast.makeText(this@MessageActivity, "Gửi tin nhắn không thành công", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -116,7 +124,7 @@ class MessageActivity : AppCompatActivity() {
     private fun readMessages() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val currentTime = LocalDateTime.now()
-        val startTime = currentTime.minus(3, ChronoUnit.DAYS)
+        val startTime = currentTime.minus(100, ChronoUnit.DAYS)
         val startTimeString = startTime.format(formatter)
         val endTimeString = currentTime.format(formatter)
         val timeRange = TimeRange(startTimeString, endTimeString)
@@ -147,7 +155,7 @@ class MessageActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 // Xử lý lỗi khi gọi API không thành công
-                Log.d("TAG","gọi API không thành công")
+                Log.d("TAG","Gọi API không thành công")
                 Log.e("TAG", "Không thể gọi API", t)
             }
         })

@@ -1,34 +1,25 @@
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeRefreshLayout"
     android:background="@color/white"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    tools:context=".fragment.DevicesFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <LinearLayout
+        <SearchView
+            android:id="@+id/search_device"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/search_device"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/custom_edittext"
-                android:queryHint="Tìm kiếm ...."
-                android:iconifiedByDefault="false"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:src="@drawable/plus"
-                android:id="@+id/btnAddDevice"/>
-        </LinearLayout>
+            android:layout_height="50dp"
+            android:queryBackground="@drawable/custom_layout"
+            android:queryHint="Tìm kiếm ...."
+            android:iconifiedByDefault="false"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_marginTop="10dp"

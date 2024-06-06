@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import com.example.demoappchat.R
 
 
 class ProfileFragment : Fragment() {

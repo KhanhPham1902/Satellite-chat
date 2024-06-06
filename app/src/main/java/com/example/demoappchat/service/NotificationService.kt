@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.service
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -8,18 +8,16 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import okhttp3.*
-import okhttp3.Request
+import com.example.demoappchat.R
+import com.example.demoappchat.activity.LoginActivity
+import com.example.demoappchat.model.AppConfig
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONObject
-import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
 
 class NotificationService : Service() {
 
@@ -28,6 +26,7 @@ class NotificationService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
     private var userID: Int = 5
     private lateinit var mSocket: Socket
+    private val sharedPrefInfo = "LOGIN_INFO"
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -35,7 +34,7 @@ class NotificationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        sharedPreferences = getSharedPreferences("LOGIN_INFO", Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
         userID = sharedPreferences.getInt("USERID", 5)
     }
 
@@ -103,7 +102,7 @@ class NotificationService : Service() {
         val notificationBuilder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle(deviceId)
             .setContentText(message)
-            .setSmallIcon(R.drawable.user)
+            .setSmallIcon(R.drawable.message)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 

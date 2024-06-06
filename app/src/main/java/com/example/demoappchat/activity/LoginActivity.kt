@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.activity
 
 import android.content.Context
 import android.content.Intent
@@ -16,6 +16,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.demoappchat.model.LoginInfo
+import com.example.demoappchat.model.LoginResponse
+import com.example.demoappchat.R
+import com.example.demoappchat.api.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

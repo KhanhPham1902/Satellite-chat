@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -8,10 +8,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
+import android.widget.SearchView
+
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.demoappchat.model.Message
+import com.example.demoappchat.R
+import com.example.demoappchat.api.RetrofitClient
+import com.example.demoappchat.model.TimeRange
+import com.example.demoappchat.adapter.DeviceAdapter
 import okhttp3.ResponseBody
 import org.json.JSONArray
 import org.json.JSONException
@@ -67,7 +74,7 @@ class DevicesFragment : Fragment() {
     private fun getListDevice() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val currentTime = LocalDateTime.now()
-        val startTime = currentTime.minus(3, ChronoUnit.DAYS)
+        val startTime = currentTime.minus(100, ChronoUnit.DAYS)
         val startTimeString = startTime.format(formatter)
         val endTimeString = currentTime.format(formatter)
         val timeRange = TimeRange(startTimeString, endTimeString)
@@ -119,7 +126,7 @@ class DevicesFragment : Fragment() {
     private fun initViews() {
         // Khởi tạo RecyclerView và các thiết lập khác
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = GridLayoutManager(context,1)
 
         // Truy cập SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences(sharedPrefInfo, Context.MODE_PRIVATE)
@@ -129,7 +136,7 @@ class DevicesFragment : Fragment() {
 
     private fun updateDeviceList(devices: List<String>) {
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
-        val deviceAdapter = DeviceAdapter(devices,messagesByDevice)
+        val deviceAdapter = DeviceAdapter(devices,messagesByDevice,recyclerView)
         recyclerView.adapter = deviceAdapter
     }
 
@@ -147,7 +154,8 @@ class DevicesFragment : Fragment() {
             val state = messageArray.getString(6)
             val message = Message(id, data, user_id, deviceName, time, direc, state)
             messages.add(message)
-            // Add message to the corresponding device group
+
+            // Them tin nhan vao nhom thiet bi tuong ung
             if (messagesByDevice.containsKey(deviceName)) {
                 val deviceMessages = messagesByDevice[deviceName]?.toMutableList()
                 deviceMessages?.add(message)
@@ -165,11 +173,7 @@ class DevicesFragment : Fragment() {
             device.contains(query, ignoreCase = true)
         }
 
-        if (filteredDevices.isEmpty()) {
-            Toast.makeText(context, "Không tìm thấy thiết bị", Toast.LENGTH_SHORT).show()
-        }
-
-        // Cập nhật danh sách thiết bị trong adapter
+        // Cap nhat danh sach thiet bi trong recyclerView
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
         val deviceAdapter = recyclerView.adapter as? DeviceAdapter
         deviceAdapter?.setFilteredList(filteredDevices)

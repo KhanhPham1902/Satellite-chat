@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_marginHorizontal="5dp"
-    android:layout_marginVertical="5dp">
+    android:layout_marginVertical="5dp"
+    android:background="@drawable/custom_layout">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -27,15 +28,6 @@
             android:textSize="18sp"
             android:layout_marginTop="5dp"
             android:textStyle=""/>
-        <ImageView
-            android:layout_width="17dp"
-            android:layout_height="17dp"
-            android:id="@+id/imgStatus"
-            android:src="@drawable/status_on"
-            android:visibility="visible"
-            android:layout_below="@+id/deviceName"
-            android:layout_marginStart="-20dp"
-            android:layout_toEndOf="@+id/profileImage"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

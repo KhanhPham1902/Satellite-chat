@@ -1,4 +1,4 @@
-package com.example.demoappchat
+package com.example.demoappchat.model
 
 data class LoginInfo(
     val username: String,

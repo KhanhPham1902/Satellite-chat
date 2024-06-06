@@ -1,6 +1,6 @@
-package com.example.demoappchat
+package com.example.demoappchat.activity
 
-import ViewPagerAdapter
+import com.example.demoappchat.adapter.ViewPagerAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,8 +11,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import com.example.demoappchat.fragment.MapFragment
+import com.example.demoappchat.fragment.DevicesFragment
+import com.example.demoappchat.service.NotificationService
+import com.example.demoappchat.fragment.ProfileFragment
+import com.example.demoappchat.R
+import com.example.demoappchat.api.WebSocketManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import de.hdodenhof.circleimageview.CircleImageView
@@ -47,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         userName.text = username
         // Set up ViewPager and TabLayout
         val viewPagerAdapter = ViewPagerAdapter(this)
-        viewPagerAdapter.addFragment(ChatsFragment(), "Hải trình")
+        viewPagerAdapter.addFragment(MapFragment(), "Hải trình")
         viewPagerAdapter.addFragment(DevicesFragment(), "Nhắn tin")
         viewPagerAdapter.addFragment(ProfileFragment(), "Tính cước")
         viewPager2.adapter = viewPagerAdapter
@@ -97,5 +101,4 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
-
 }

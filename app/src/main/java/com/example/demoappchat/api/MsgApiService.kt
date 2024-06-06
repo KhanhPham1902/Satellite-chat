@@ -1,5 +1,10 @@
-package com.example.demoappchat
+package com.example.demoappchat.api
 
+import com.example.demoappchat.model.AppConfig
+import com.example.demoappchat.model.LoginInfo
+import com.example.demoappchat.model.LoginResponse
+import com.example.demoappchat.model.MessageData
+import com.example.demoappchat.model.TimeRange
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
